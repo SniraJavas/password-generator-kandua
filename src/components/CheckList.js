@@ -1,5 +1,5 @@
 import React,  { useState } from 'react';
-import { Form } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
 
 const Checklist = () => {
 
@@ -11,18 +11,6 @@ const Checklist = () => {
 
     return (
         <div>
-            <label>Character Length</label>
-            <p>Value: {value}</p>
-            <div>
-            <input
-                type="range"
-                min="0"
-                max="30"
-                value={value}
-                onChange={handleSliderChange}
-            />
-           
-            </div>
             <Form>
             <Form.Group>
                 <Form.Check type="checkbox" label="Include Uppercase Letters" />
@@ -35,10 +23,8 @@ const Checklist = () => {
             <div>
             Strength
             </div>
-            <button> Generate</button>
-           
+            <button> Generate</button> 
         </div>
-
     );
 };
 

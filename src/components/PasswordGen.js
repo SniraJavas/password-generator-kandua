@@ -3,21 +3,18 @@ import Checklist from './CheckList';
 import SliderInput from './SliderInput';
 const PasswordGen = () => {
     return (
-        <div>
-            <head>
-                <title>Password generator app</title>
-            </head>
-            <body>
+        <div className="d-flex justify-content-center align-items-center vh-100 bg-black">
+            <div className='bg-secondary'style={{padding: 5 + '%'}}>
 
+                <div className='text-white'>Password generator app</div>
                 <div className='password-display-container'>
-                    <textarea placeholder='Password will display here i.e P4$5W0rD!' />
+                    <input type='text' placeholder='Password will display here i.e P4$5W0rD!' />
                 </div>
-                <div className='password-settings-container'>
+                <div className='bg-secondary'>
                     <SliderInput />
                     <Checklist />
                 </div>
-
-            </body>
+            </div>
         </div>
     );
 };

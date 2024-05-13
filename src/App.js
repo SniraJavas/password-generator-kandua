@@ -8,8 +8,8 @@ function App() {
   return (
     <Router>
         <Routes>
-          <Route exact path="/" component={Home} />
-          <Route path="/PasswordGen" component={PasswordGen} />
+          <Route exact path="/" element={<Home />} />
+          <Route path="/PasswordGen" element={<PasswordGen/>} />
         </Routes>
     </Router>
   );

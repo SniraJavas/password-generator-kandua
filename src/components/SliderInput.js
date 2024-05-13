@@ -8,13 +8,14 @@ const SliderInput = () => {
     };
 
     return (
-        <div>
+        <div className='row'>
             <label>Character Length</label>
             <p>Value: {value}</p>
             <input
                 type="range"
                 min="0"
                 max="30"
+                className=''
                 value={value}
                 onChange={handleSliderChange}
             />

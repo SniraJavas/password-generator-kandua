@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+input:checked ~ .checkmark {
+  background-color: #2ead5b;
+}
