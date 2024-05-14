@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const SliderInput = () => {
-    const [value, setValue] = useState(30); // Initial value
+const SliderInput = (props) => {
+    const { passwordLen, passwordMax, onChange } = props;
 
     const handleSliderChange = (event) => {
-        setValue(event.target.value);
+        const len = parseInt(event.target.value);
+        onChange(len);
     };
 
     return (
         <div className='row'>
             <label>Character Length</label>
-            <p>Value: {value}</p>
+            <p>Value: {passwordLen}</p>
             <input
                 type="range"
                 min="0"
-                max="30"
+                max={passwordMax}
                 className=''
-                value={value}
+                value={passwordLen}
                 onChange={handleSliderChange}
             />
-          
         </div>
     );
 };
