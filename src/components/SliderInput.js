@@ -10,8 +10,10 @@ const SliderInput = (props) => {
 
     return (
         <div className='row'>
-            <label>Character Length</label>
-            <p>Value: {passwordLen}</p>
+          <div style={{display:'flex'}}>
+            <div className='col text-start'>Character Length</div>
+            <div className='col text-end'>{passwordLen}</div>
+          </div>
             <input
                 type="range"
                 min="4"

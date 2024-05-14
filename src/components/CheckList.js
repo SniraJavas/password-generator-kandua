@@ -11,10 +11,10 @@ const Checklist = (props) => {
     const [includeNumbers, setIncludeNumbers] = useState(false);
     const [generatedPassword, setGeneratedPassword] = useState('');
 
-    useEffect(() => {
+   useEffect(() => {
         setLength(props.passwordLen);
     }, [props.passwordLen]);
-
+    
     const generatePassword = () => {
         const capitalLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const lowerLetters = 'abcdefghijklmnopqrstuvwxyz';
@@ -29,9 +29,6 @@ const Checklist = (props) => {
     
         const regex = new RegExp(`[${charset}]`, 'g');
         let password = '';
-        
-        console.log("props ",props);
-        console.log("len ",length);
 
         for (let i = 0; i < length; i++) {
           password += charset.charAt(Math.floor(Math.random() * charset.length));
@@ -39,6 +36,7 @@ const Checklist = (props) => {
 
         setGeneratedPassword(password);
         props.onPasswordGenerated(generatedPassword);
+        console.log(generatedPassword)
     };
 
     return (
