@@ -9,6 +9,12 @@ const PasswordGen = () => {
 
     const handlePasswordLenChange = (len) => {
         setPasswordLen(len);
+        console.log("parent password len changed{0 }",len);
+    };
+
+    const handlePasswordGenerated = (generatedPassword) => {
+        setPassword(generatedPassword);
+        console.log("parent password changed{0}",generatedPassword);
     };
 
     return (
@@ -20,7 +26,7 @@ const PasswordGen = () => {
                 </div>
                 <div className='bg-secondary'>
                     <SliderInput passwordLen={passwordLen} passwordMax={passwordMax} onChange={handlePasswordLenChange} />
-                    <Checklist passwordStringLen={passwordLen}/>
+                    <Checklist passwordLen={passwordLen} onPasswordGenerated={handlePasswordGenerated} />
                 </div>
             </div>
         </div>

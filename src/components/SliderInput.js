@@ -14,7 +14,7 @@ const SliderInput = (props) => {
             <p>Value: {passwordLen}</p>
             <input
                 type="range"
-                min="0"
+                min="4"
                 max={passwordMax}
                 className=''
                 value={passwordLen}

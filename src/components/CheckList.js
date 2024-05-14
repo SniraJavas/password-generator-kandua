@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 
 const Checklist = (props) => {
 
+  
     const [length, setLength] = useState(props.passwordLen);
     const [includeCapitalLetters, setIncludeCapitalLetters] = useState(false);
     const [includeLowerLetters, setIncludeLowerLetters] = useState(false);
@@ -10,9 +11,9 @@ const Checklist = (props) => {
     const [includeNumbers, setIncludeNumbers] = useState(false);
     const [generatedPassword, setGeneratedPassword] = useState('');
 
-    const handleSliderChange = (event) => {
-        setValue(event.target.passwordStringLen);
-    };
+    useEffect(() => {
+        setLength(props.passwordLen);
+    }, [props.passwordLen]);
 
     const generatePassword = () => {
         const capitalLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -28,10 +29,16 @@ const Checklist = (props) => {
     
         const regex = new RegExp(`[${charset}]`, 'g');
         let password = '';
+        
+        console.log("props ",props);
+        console.log("len ",length);
+
         for (let i = 0; i < length; i++) {
           password += charset.charAt(Math.floor(Math.random() * charset.length));
         }
+
         setGeneratedPassword(password);
+        props.onPasswordGenerated(generatedPassword);
     };
 
     return (
