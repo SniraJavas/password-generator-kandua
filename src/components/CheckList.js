@@ -45,15 +45,15 @@ const Checklist = (props) => {
                 <Form.Group>
                     <Form.Check id="UpperCase" type="checkbox" label="Include Uppercase Letters" onChange={() => setIncludeCapitalLetters(!includeCapitalLetters)}  />
                     <Form.Check id="LowerCase" type="checkbox" label="Include Lowercase Letters" onChange={() => setIncludeLowerLetters(!includeLowerLetters)} />
-                    <Form.Check id="Numbsers" type="checkbox" label="Include Numbers" onChange={() => setIncludeSpecialSymbols(!includeSpecialSymbols)} />
-                    <Form.Check id="Symbols" type="checkbox" label="Include Symbols" onChange={() => setIncludeNumbers(!includeNumbers)}/>
+                    <Form.Check id="Numbsers" type="checkbox" label="Include Numbers" onChange={() => setIncludeNumbers(!includeNumbers)} />
+                    <Form.Check id="Symbols" type="checkbox" label="Include Symbols" onChange={() => setIncludeSpecialSymbols(!includeSpecialSymbols)}/>
                 </Form.Group>
             </Form>
 
             <div>
                 Strength
             </div>
-            <button className='btn btn-primary' onClick={generatePassword}> Generate Password</button>
+            <input type="button" onClick={generatePassword} value=" GENERATE " />
         </div>
     );
 };

@@ -21,7 +21,7 @@ const SliderInput = (props) => {
                 className=''
                 value={passwordLen}
                 onChange={handleSliderChange}
-            />
+            ></input>
         </div>
     );
 };
