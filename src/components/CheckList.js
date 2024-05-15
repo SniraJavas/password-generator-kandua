@@ -36,7 +36,6 @@ const Checklist = (props) => {
 
         setGeneratedPassword(password);
         props.onPasswordGenerated(generatedPassword);
-        console.log(generatedPassword)
     };
 
     return (
