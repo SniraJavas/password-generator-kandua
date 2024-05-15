@@ -29,7 +29,7 @@ const Checklist = (props) => {
         }
     };
 
-    const RenderProgressBar = () => {
+    const ProgressBar = () => {
 
         setStrength(calculateStrength());
         
@@ -70,7 +70,7 @@ const Checklist = (props) => {
         }
 
         setGeneratedPassword(password);
-        props.onPasswordGenerated(generatedPassword);
+        props.onPasswordGenerated(password);
     };
 
     return (
@@ -88,7 +88,7 @@ const Checklist = (props) => {
                 <div className='col text-start'>{strength}</div>
                 <div className='pe-5'>{strength}</div>
                 <div className="col text-end" >
-                <RenderProgressBar />
+                <ProgressBar />
                 </div>
 
             </div>
