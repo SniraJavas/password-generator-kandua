@@ -52,15 +52,3 @@ input[type=button] {
 input[type="checkbox"]:checked {
   background-color: #9ef9b5;
 }
-
-/* Style the tick mark */
-input[type="checkbox"]:checked::before {
-  color: black;
-  border-radius: 0;
-}
-
-/* Show the custom tick mark when checkbox is checked */
-input[type="checkbox"]:checked::after {
-  color: black;
-  border-radius: 0;
-}
