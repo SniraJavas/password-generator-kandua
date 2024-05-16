@@ -63,27 +63,27 @@ const Checklist = (props) => {
         let charset = '';
         if (includeCapitalLetters){
             charset += capitalLetters;
-            i = Math.floor(Math.random() * (capitalLetters.length - 0 + 1))+1;
+            i = Math.floor(Math.random() * (capitalLetters.length));
             password+=capitalLetters[0];
             index+=1;
         } 
         if (includeLowerLetters){
             charset += lowerLetters;
-            i = Math.floor(Math.random() * (lowerLetters.length - 0 + 1))+1;
+            i = Math.floor(Math.random() * (lowerLetters.length));
             password+=lowerLetters[0];
             index+=1;
         }
 
         if (includeSpecialSymbols) {
             charset += specialSymbols;
-            i = Math.floor(Math.random() * (specialSymbols.length - 0 + 1))+1;
+            i = Math.floor(Math.random() * (specialSymbols.length));
             password+=specialSymbols[0];
             index+=1;
         }
 
         if (includeNumbers){
             charset += numbers;
-            i = Math.floor(Math.random() * (numbers.length - 0 + 1))+1;
+            i = Math.floor(Math.random() * (numbers.length));
             password+=numbers[0];
             index+=1;
         }
