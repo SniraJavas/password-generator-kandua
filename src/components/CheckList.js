@@ -57,18 +57,42 @@ const Checklist = (props) => {
         const specialSymbols = '!@#$%^&*()_+{}[]';
         const numbers = '0123456789';
 
-        let charset = '';
-        if (includeCapitalLetters) charset += capitalLetters;
-        if (includeLowerLetters) charset += lowerLetters;
-        if (includeSpecialSymbols) charset += specialSymbols;
-        if (includeNumbers) charset += numbers;
-
         let password = '';
+        let index = 0;
+        let i = 0;
+        let charset = '';
+        if (includeCapitalLetters){
+            charset += capitalLetters;
+            i = Math.floor(Math.random() * (capitalLetters.length - 0 + 1))+1;
+            password+=capitalLetters[0];
+            index+=1;
+        } 
+        if (includeLowerLetters){
+            charset += lowerLetters;
+            i = Math.floor(Math.random() * (lowerLetters.length - 0 + 1))+1;
+            password+=lowerLetters[0];
+            index+=1;
+        }
 
-        for (let i = 0; i < length; i++) {
+        if (includeSpecialSymbols) {
+            charset += specialSymbols;
+            i = Math.floor(Math.random() * (specialSymbols.length - 0 + 1))+1;
+            password+=specialSymbols[0];
+            index+=1;
+        }
+
+        if (includeNumbers){
+            charset += numbers;
+            i = Math.floor(Math.random() * (numbers.length - 0 + 1))+1;
+            password+=numbers[0];
+            index+=1;
+        }
+
+        for (let j = index; j < length; j++) {
             password += charset.charAt(Math.floor(Math.random() * charset.length));
         }
 
+        password = password.split('').reverse().join('');
         setGeneratedPassword(password);
         props.onPasswordGenerated(password);
     };
