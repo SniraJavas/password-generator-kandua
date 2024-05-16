@@ -109,7 +109,7 @@ const Checklist = (props) => {
             </Form>
 
             <div style={{display:'flex'}}>
-                <div className='col text-start'>{strength}</div>
+                <div className='col text-start'>Strength</div>
                 <div className='pe-5'>{strength}</div>
                 <div className="col text-end" >
                 <ProgressBar />
