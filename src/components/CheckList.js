@@ -11,7 +11,7 @@ const Checklist = (props) => {
     const [includeNumbers, setIncludeNumbers] = useState(false);
     const [generatedPassword, setGeneratedPassword] = useState('');
     const [strength,setStrength] = useState('Weak');
-
+    
     useEffect(() => {
         setLength(props.passwordLen);
     }, [props.passwordLen]);
@@ -43,7 +43,7 @@ const Checklist = (props) => {
         } else {
             color = 'red';
         }
-
+        
         return (
             <div style={{ backgroundColor: 'lightgray', width: '100%', height: '20px' }}>
                 <div style={{ backgroundColor: color, width: `${strength === 'Best' ? 100 : (strength === 'Strong' ? 75 : (strength === 'Medium' ? 50 : 25))}%`, height: '100%' }}></div>
@@ -54,7 +54,7 @@ const Checklist = (props) => {
     const generatePassword = () => {
         const capitalLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const lowerLetters = 'abcdefghijklmnopqrstuvwxyz';
-        const specialSymbols = '!@#$%^&*()_+{}[]';
+        const specialSymbols = '!@#$%^&*()_+{}[]|.?/\\`~';
         const numbers = '0123456789';
 
         let password = '';
@@ -64,27 +64,27 @@ const Checklist = (props) => {
         if (includeCapitalLetters){
             charset += capitalLetters;
             i = Math.floor(Math.random() * (capitalLetters.length));
-            password+=capitalLetters[0];
+            password+=capitalLetters[i];
             index+=1;
         } 
         if (includeLowerLetters){
             charset += lowerLetters;
             i = Math.floor(Math.random() * (lowerLetters.length));
-            password+=lowerLetters[0];
+            password+=lowerLetters[i];
             index+=1;
         }
 
         if (includeSpecialSymbols) {
             charset += specialSymbols;
             i = Math.floor(Math.random() * (specialSymbols.length));
-            password+=specialSymbols[0];
+            password+=specialSymbols[i];
             index+=1;
         }
 
         if (includeNumbers){
             charset += numbers;
             i = Math.floor(Math.random() * (numbers.length));
-            password+=numbers[0];
+            password+=numbers[i];
             index+=1;
         }
 
