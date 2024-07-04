@@ -4,31 +4,6 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-  # Install Node.js
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '14.x'  # Specify the Node.js version
-    displayName: 'Install Node.js'
-
-  # Install dependencies and build the project
-  - script: |
-      npm install
-      npm run build
-    displayName: 'Install dependencies and build'
-
-  # Create .zip file for artifacts
-  - script: |
-      zip -r $(Build.ArtifactStagingDirectory)/myapp.zip .
-    displayName: 'Create .zip file for artifacts'
-
-  # Publish build artifacts
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/myapp.zip'  # Path to the .zip file
-      artifactName: 'drop'
-    displayName: 'Publish Build Artifacts'
-
 stages:
 # Build Stage
 - stage: Build
@@ -37,7 +12,7 @@ stages:
     steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: '14.x'
+        versionSpec: '14.x'  # Specify the Node.js version
       displayName: 'Install Node.js'
 
     - script: |
@@ -61,7 +36,7 @@ stages:
   jobs:
   - deployment: DeployWeb
     displayName: 'Deploy Job'
-    environment: 'your-environment-name'  # Specify your environment name
+    environment: 'development'  # Specify your environment name
     strategy:
       runOnce:
         deploy:
@@ -73,11 +48,11 @@ stages:
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'Your Azure Subscription'
+              azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
               appType: 'webAppLinux'
-              WebAppName: 'Your Web App Name'
+              WebAppName: 'DevPasswordReactjs'
               packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
-            displayName: 'Deploy to Azure Web App'
+            displayName: 'Deploy to Azure Development Web App'
 
           - task: Bash@3
             inputs:
