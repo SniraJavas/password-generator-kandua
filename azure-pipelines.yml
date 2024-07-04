@@ -7,7 +7,7 @@ pool:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '14.x' # Specify the Node.js version
+      versionSpec: '14.x'  # Specify the Node.js version
     displayName: 'Install Node.js'
 
   - script: |
@@ -15,7 +15,12 @@ steps:
       npm run build
     displayName: 'Install dependencies and build'
 
+  - script: |
+      zip -r $(Build.ArtifactStagingDirectory)/myapp.zip .
+    displayName: 'Create .zip file for artifacts'
+
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'  # Path where your .zip file is located
-      artifactName: 'drop'  # Name of the artifact
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/myapp.zip'  # Path to the .zip file
+      artifactName: 'drop'
+    displayName: 'Publish Build Artifacts'
