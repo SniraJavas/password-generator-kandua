@@ -54,8 +54,14 @@ stages:
               packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
             displayName: 'Deploy to Azure Development Web App'
 
-          - task: Bash@3
-            inputs:
-              filePath: '$(Pipeline.Workspace)/drop/deploy.sh'
-              workingDirectory: '$(Pipeline.Workspace)/drop'
-            displayName: 'Run custom deployment script'
+ # Remove the Bash task if not needed
+          # - task: Bash@3
+          #   inputs:
+          #     targetType: 'inline'
+          #     script: |
+          #       cd $HOME/site/wwwroot
+          #       echo "Installing Node.js packages..."
+          #       npm install
+          #       echo "Building React application..."
+          #       npm run build
+          #   displayName: 'Run custom deployment script'
