@@ -17,5 +17,5 @@ steps:
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: 'build'
-      artifactName: 'drop'
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'  # Path where your .zip file is located
+      artifactName: 'drop'  # Name of the artifact
