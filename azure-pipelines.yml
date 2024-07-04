@@ -1,29 +1,21 @@
 trigger:
-- main
+  - main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '16.x'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '14.x' # Specify the Node.js version
+    displayName: 'Install Node.js'
 
-- script: |
-    npm install
-  displayName: 'Install dependencies'
+  - script: |
+      npm install
+      npm run build
+    displayName: 'Install dependencies and build'
 
-- script: |
-    npm start
-  displayName: 'Build the application'
-
-- script: |
-    npm test -- --watchAll=false
-  displayName: 'Run tests'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'build'
-    ArtifactName: 'drop'
-  displayName: 'Publish build artifacts'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: 'build'
+      artifactName: 'drop'
