@@ -68,8 +68,8 @@ jobs:
 
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
-          $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
-          $extractPath = "$(Build.ArtifactStagingDirectory)\drop\"
+          $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"
+          $extractPath = "$(Build.ArtifactStagingDirectory)\extracted"
 
           # Check if ZIP file exists and display the result
           $zipFileExists = Test-Path $zipPath
@@ -116,4 +116,4 @@ jobs:
           azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
           appType: webApp
           appName: DevPasswordReactjs
-          package: '$(Build.ArtifactStagingDirectory)'  # Deploy the extracted files
+          package: '$(Build.ArtifactStagingDirectory)'  # Directly deploy the extracted files
