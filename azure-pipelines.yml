@@ -52,7 +52,7 @@ jobs:
       - task: DownloadBuildArtifacts@0
         inputs:
           artifactName: 'drop'
-          downloadPath: '$(Build.ArtifactStagingDirectory)\myapp.zip'
+          downloadPath: '$(Build.ArtifactStagingDirectory)'
 
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -62,6 +62,11 @@ jobs:
           # Verify the ZIP file exists
           if (-Not (Test-Path $zipPath)) {
             throw "ZIP file does not exist at path: $zipPath"
+          }
+
+          # Ensure the extract path exists
+          if (-Not (Test-Path $extractPath)) {
+            New-Item -Path $extractPath -ItemType Directory -Force
           }
 
           # Extract the ZIP file to the 'extracted' folder
@@ -87,4 +92,4 @@ jobs:
           azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
           appType: webApp
           appName: DevPasswordReactjs
-          package: '$(Build.ArtifactStagingDirectory)'  # Directly deploy the extracted files
+          package: '$(Build.ArtifactStagingDirectory)'  # Deploy the extracted files
