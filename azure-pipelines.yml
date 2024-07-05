@@ -10,17 +10,17 @@ steps:
       versionSpec: '14.x'  # Specify the Node.js version
     displayName: 'Install Node.js'
 
-  - script: |
+  - powershell: |
       npm install
       npm run build
     displayName: 'Install dependencies and build'
 
-  - script: |
-      zip -r $(Build.ArtifactStagingDirectory)/myapp.zip .
+  - powershell: |
+      Compress-Archive -Path * -DestinationPath $(Build.ArtifactStagingDirectory)\myapp.zip
     displayName: 'Create .zip file for artifacts'
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)/myapp.zip'  # Path to the .zip file
+      pathToPublish: '$(Build.ArtifactStagingDirectory)\myapp.zip'  # Path to the .zip file
       artifactName: 'drop'
     displayName: 'Publish Build Artifacts'
