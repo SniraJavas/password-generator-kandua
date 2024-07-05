@@ -52,7 +52,7 @@ jobs:
       - task: DownloadBuildArtifacts@0
         inputs:
           artifactName: 'drop'
-          downloadPath: '$(Build.ArtifactStagingDirectory)'
+          downloadPath: '$(Build.ArtifactStagingDirectory)\myapp.zip'
 
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
