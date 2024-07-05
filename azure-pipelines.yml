@@ -16,11 +16,11 @@ steps:
     displayName: 'Install dependencies and build'
 
   - powershell: |
-      Compress-Archive -Path * -DestinationPath $(Build.ArtifactStagingDirectory)\myapp.zip
-    displayName: 'Create .zip file for artifacts'
+      Copy-Item -Path * -Destination $(Build.ArtifactStagingDirectory) -Recurse -Force
+    displayName: 'Copy files to artifact staging directory'
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'  # Path to the .zip file
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'  # Path to the directory
       artifactName: 'drop'
     displayName: 'Publish Build Artifacts'
