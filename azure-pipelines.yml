@@ -27,11 +27,15 @@ jobs:
           Write-Host "Listing source directory contents:"
           Get-ChildItem -Path $sourcePath -Recurse | ForEach-Object { Write-Host $_.FullName }
 
-          # Verify the source directory exists
+          # Check if the source path contains any files or directories
           if (-Not (Test-Path $sourcePath)) {
             throw "Source directory does not exist: $sourcePath"
           }
-          
+
+          if (-Not (Get-ChildItem -Path $sourcePath -Recurse)) {
+            throw "Source directory is empty: $sourcePath"
+          }
+
           # Create the ZIP file
           [IO.Compression.ZipFile]::CreateFromDirectory($sourcePath, $zipPath)
           
@@ -94,22 +98,4 @@ jobs:
 
           # Move the extracted files to the artifact staging directory
           Get-ChildItem -Path $extractPath -Recurse | ForEach-Object {
-              $dest = Join-Path -Path "$(Build.ArtifactStagingDirectory)" -ChildPath $_.FullName.Substring($extractPath.Length).TrimStart("\")
-              if ($_.PSIsContainer) {
-                  New-Item -Path $dest -ItemType Directory -Force
-              } else {
-                  Copy-Item -Path $_.FullName -Destination $dest -Force
-              }
-          }
-
-          # Clean up the extracted folder
-          Remove-Item -Path $extractPath -Recurse -Force
-        displayName: 'Extract .zip file and prepare files for deployment'
-
-      - task: AzureWebApp@1
-        displayName: 'Azure Web App Deploy: DevPasswordReactjs'
-        inputs:
-          azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
-          appType: webApp
-          appName: DevPasswordReactjs
-          package: '$(Build.ArtifactStagingDirectory)'  # Deploy the extracted files
+              $dest = Join-Path -Path "$(Build.ArtifactStagingDirectory)" -ChildPath $_.FullName.Substring($extractPat
