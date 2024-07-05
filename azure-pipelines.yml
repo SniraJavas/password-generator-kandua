@@ -69,7 +69,7 @@ jobs:
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
-          $extractPath = "$(Build.ArtifactStagingDirectory)\extracted"
+          $extractPath = "$(Build.ArtifactStagingDirectory)\drop\"
 
           # Check if ZIP file exists and display the result
           $zipFileExists = Test-Path $zipPath
