@@ -20,7 +20,7 @@ jobs:
 
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
-          $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
+          $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"
           $sourcePath = "$(Build.SourcesDirectory)"
           
           # List the source directory contents before creating the ZIP file
