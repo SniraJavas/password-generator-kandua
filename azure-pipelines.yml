@@ -23,6 +23,10 @@ jobs:
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
           $sourcePath = "$(Build.SourcesDirectory)"
           
+          # List the source directory contents before creating the ZIP file
+          Write-Host "Listing source directory contents:"
+          Get-ChildItem -Path $sourcePath -Recurse | ForEach-Object { Write-Host $_.FullName }
+
           # Verify the source directory exists
           if (-Not (Test-Path $sourcePath)) {
             throw "Source directory does not exist: $sourcePath"
@@ -35,6 +39,10 @@ jobs:
           if (-Not (Test-Path $zipPath)) {
             throw "Failed to create ZIP file at path: $zipPath"
           }
+
+          # List the contents of the artifact staging directory
+          Write-Host "Listing artifact staging directory contents:"
+          Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
         displayName: 'Create .zip file for artifacts'
 
       - task: PublishBuildArtifacts@1
@@ -59,8 +67,16 @@ jobs:
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
           $extractPath = "$(Build.ArtifactStagingDirectory)\extracted"
 
+          # Check if ZIP file exists and display the result
+          $zipFileExists = Test-Path $zipPath
+          Write-Host "Does the ZIP file exist at $zipPath? $zipFileExists"
+
+          # List the artifact staging directory contents before extraction
+          Write-Host "Listing artifact staging directory contents before extraction:"
+          Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
+
           # Verify the ZIP file exists
-          if (-Not (Test-Path $zipPath)) {
+          if (-Not $zipFileExists) {
             throw "ZIP file does not exist at path: $zipPath"
           }
 
@@ -71,6 +87,10 @@ jobs:
 
           # Extract the ZIP file to the 'extracted' folder
           [IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $extractPath)
+
+          # List the contents of the extracted directory
+          Write-Host "Listing contents of the extracted directory:"
+          Get-ChildItem -Path $extractPath -Recurse | ForEach-Object { Write-Host $_.FullName }
 
           # Move the extracted files to the artifact staging directory
           Get-ChildItem -Path $extractPath -Recurse | ForEach-Object {
