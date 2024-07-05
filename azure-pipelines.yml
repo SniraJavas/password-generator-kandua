@@ -4,23 +4,57 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
-steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '14.x'  # Specify the Node.js version
-    displayName: 'Install Node.js'
+jobs:
+  - job: Build
+    displayName: 'Build Job'
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '14.x'  # Specify the Node.js version
+        displayName: 'Install Node.js'
 
-  - powershell: |
-      npm install
-      npm run build
-    displayName: 'Install dependencies and build'
+      - powershell: |
+          npm install
+          npm run build
+        displayName: 'Install dependencies and build'
 
-  - powershell: |
-      Copy-Item -Path * -Destination $(Build.ArtifactStagingDirectory) -Recurse -Force
-    displayName: 'Copy files to artifact staging directory'
+      - powershell: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          function ZipFiles($source, $destination) {
+              [IO.Compression.ZipFile]::CreateFromDirectory($source, $destination)
+          }
+          ZipFiles -source "$(Build.SourcesDirectory)" -destination "$(Build.ArtifactStagingDirectory)\myapp.zip"
+        displayName: 'Create .zip file for artifacts'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'  # Path to the directory
-      artifactName: 'drop'
-    displayName: 'Publish Build Artifacts'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)\myapp.zip'  # Path to the .zip file
+          artifactName: 'drop'
+        displayName: 'Publish Build Artifacts'
+
+  - job: Deploy
+    displayName: 'Deploy Job'
+    dependsOn: Build
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          artifactName: 'drop'
+          downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+      - powershell: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          function UnzipFiles($zipPath, $destination) {
+              [IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $destination)
+          }
+          UnzipFiles -zipPath "$(Build.ArtifactStagingDirectory)\myapp.zip" -destination "$(Build.ArtifactStagingDirectory)\unzipped"
+        displayName: 'Extract .zip file for artifacts'
+
+      - task: AzureWebApp@1
+        displayName: 'Azure Web App Deploy: DevPasswordReactjs'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
+          appType: webApp
+          appName: DevPasswordReactjs
+          package: '$(Build.ArtifactStagingDirectory)\unzipped'
