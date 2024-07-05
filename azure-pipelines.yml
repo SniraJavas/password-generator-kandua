@@ -21,6 +21,6 @@ steps:
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)\myapp.zip'  # Path to the .zip file
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'  # Path to the .zip file
       artifactName: 'drop'
     displayName: 'Publish Build Artifacts'
