@@ -15,13 +15,13 @@ jobs:
 
       - powershell: |
           npm install
-          npm run build
+          npm run build  # This command should create the build directory and output files
         displayName: 'Install dependencies and build'
 
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
-          $sourcePath = "$(Build.SourcesDirectory)\path\to\build"
+          $sourcePath = "$(Build.SourcesDirectory)\build"  # Updated to match the actual output directory
 
           # Check if the source path exists
           if (-Not (Test-Path $sourcePath)) {
@@ -46,7 +46,6 @@ jobs:
           Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
         displayName: 'Create .zip file for artifacts'
 
-
       - task: PublishBuildArtifacts@1
         inputs:
           pathToPublish: '$(Build.ArtifactStagingDirectory)\myapp.zip'  # Path to the .zip file
@@ -68,23 +67,19 @@ jobs:
           # Define the path to the .zip file
           $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"
 
-          # Check if the ZIP file exists
-          $zipFileExists = Test-Path $zipPath
-          Write-Host "Does the ZIP file exist at $zipPath? $zipFileExists"
-
-          # Verify the ZIP file exists before continuing
-          if (-Not $zipFileExists) {
+          # Check if ZIP file exists and display the result
+          if (-Not (Test-Path $zipPath)) {
             throw "ZIP file does not exist at $zipPath"
           }
 
-          # List the artifact staging directory contents before setting up the deployment
-          Write-Host "Listing artifact staging directory contents:"
+          Write-Host "ZIP file exists at $zipPath"
+          Write-Host "Listing artifact staging directory contents before setting up the deployment:"
           Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
         displayName: 'Verify .zip file existence'
 
       - task: AzureWebApp@1
         inputs:
-          azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
+          azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'  # Replace with your service connection name
           appName: 'DevPasswordReactjs'
           package: '$(Build.ArtifactStagingDirectory)\drop\myapp.zip'
           deploymentMethod: 'zipDeploy'
