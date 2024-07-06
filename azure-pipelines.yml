@@ -1,8 +1,8 @@
 trigger:
-  - main  # Trigger the pipeline when changes are pushed to the 'main' branch
+  - main
 
 pool:
-  vmImage: 'windows-latest'  # Use the latest Windows VM image for the build agent
+  vmImage: 'windows-latest'
 
 jobs:
   - job: Build
@@ -10,42 +10,30 @@ jobs:
     steps:
       - task: NodeTool@0
         inputs:
-          versionSpec: '14.x'  # Specify the Node.js version to install
-        displayName: 'Install Node.js'  # Display name for the step
+          versionSpec: '14.x'  # Specify the Node.js version
+        displayName: 'Install Node.js'
 
       - powershell: |
-          npm install  # Install project dependencies
-          npm run build  # Build the project
-        displayName: 'Install dependencies and build'  # Display name for the step
+          npm install
+          npm run build
+        displayName: 'Install dependencies and build'
 
       - powershell: |
-          $sourcePath = "$(Build.SourcesDirectory)\path\to\build\"
-
-          # Check if the source path exists and create it if it doesn't
-          if (-Not (Test-Path $sourcePath)) {
-            Write-Host "Source path does not exist. Creating: $sourcePath"
-            New-Item -Path $sourcePath -ItemType Directory -Force
-          } else {
-            Write-Host "Source path exists: $sourcePath"
-          }
-
-          # List contents of the sources directory to help identify the correct path
-          Write-Host "Listing contents of the sources directory:"
-          Get-ChildItem -Path "$(Build.SourcesDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
-
-          $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"  # Define the path for the ZIP file to be created
-
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
+          $sourcePath = "$(Build.SourcesDirectory)"
+          
           # List the source directory contents before creating the ZIP file
           Write-Host "Listing source directory contents:"
           Get-ChildItem -Path $sourcePath -Recurse | ForEach-Object { Write-Host $_.FullName }
 
           # Check if the source path contains any files or directories
           if (-Not (Test-Path $sourcePath)) {
-            throw "Source directory does not exist: $sourcePath"  # Throw an error if the source directory does not exist
+            throw "Source directory does not exist: $sourcePath"
           }
 
           if (-Not (Get-ChildItem -Path $sourcePath -Recurse)) {
-            throw "Source directory is empty: $sourcePath"  # Throw an error if the source directory is empty
+            throw "Source directory is empty: $sourcePath"
           }
 
           # Create the ZIP file
@@ -53,35 +41,35 @@ jobs:
           
           # Verify the ZIP file was created
           if (-Not (Test-Path $zipPath)) {
-            throw "Failed to create ZIP file at path: $zipPath"  # Throw an error if the ZIP file was not created
+            throw "Failed to create ZIP file at path: $zipPath"
           }
 
           # List the contents of the artifact staging directory
           Write-Host "Listing artifact staging directory contents:"
           Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
-        displayName: 'Create .zip file for artifacts'  # Display name for the step
+        displayName: 'Create .zip file for artifacts'
 
       - task: PublishBuildArtifacts@1
         inputs:
-          pathToPublish: '$(Build.ArtifactStagingDirectory)\myapp.zip'  # Path to the .zip file to be published as an artifact
-          artifactName: 'drop'  # Name of the artifact
-        displayName: 'Publish Build Artifacts'  # Display name for the step
+          pathToPublish: '$(Build.ArtifactStagingDirectory)\myapp.zip'  # Path to the .zip file
+          artifactName: 'drop'
+        displayName: 'Publish Build Artifacts'
 
   - job: Deploy
     displayName: 'Deploy Job'
-    dependsOn: Build  # This job depends on the successful completion of the Build job
+    dependsOn: Build
     pool:
-      vmImage: 'windows-latest'  # Use the latest Windows VM image for the deployment agent
+      vmImage: 'windows-latest'
     steps:
       - task: DownloadBuildArtifacts@0
         inputs:
-          artifactName: 'drop'  # Name of the artifact to download
-          downloadPath: '$(Build.ArtifactStagingDirectory)'  # Path to download the artifact to
+          artifactName: 'drop'
+          downloadPath: '$(Build.ArtifactStagingDirectory)'
 
       - powershell: |
-          Add-Type -AssemblyName System.IO.Compression.FileSystem  # Add the .NET assembly needed for ZIP file operations
-          $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"  # Define the path to the downloaded ZIP file
-          $extractPath = "$(Build.ArtifactStagingDirectory)\extracted"  # Define the path for extracting the ZIP file
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"
+          $extractPath = "$(Build.ArtifactStagingDirectory)\extracted"
 
           # Check if ZIP file exists and display the result
           $zipFileExists = Test-Path $zipPath
@@ -93,12 +81,39 @@ jobs:
 
           # Verify the ZIP file exists
           if (-Not $zipFileExists) {
-            throw "ZIP file does not exist at path: $zipPath"  # Throw an error if the ZIP file does not exist
+            throw "ZIP file does not exist at path: $zipPath"
           }
 
-          # Display contents of the ZIP file
-          Write-Host "Contents of the ZIP file:"
-          $zip = [IO.Compression.ZipFile]::OpenRead($zipPath)
-          $zip.Entries | ForEach-Object { Write-Host $_.FullName }  # List the contents of the ZIP file
-
           # Ensure the extract path exists
+          if (-Not (Test-Path $extractPath)) {
+            New-Item -Path $extractPath -ItemType Directory -Force
+          }
+
+          # Extract the ZIP file to the 'extracted' folder
+          [IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $extractPath)
+
+          # List the contents of the extracted directory
+          Write-Host "Listing contents of the extracted directory:"
+          Get-ChildItem -Path $extractPath -Recurse | ForEach-Object { Write-Host $_.FullName }
+
+          # Move the extracted files to the artifact staging directory
+          Get-ChildItem -Path $extractPath -Recurse | ForEach-Object {
+              $dest = Join-Path -Path "$(Build.ArtifactStagingDirectory)" -ChildPath $_.FullName.Substring($extractPath.Length).TrimStart("\")
+              if ($_.PSIsContainer) {
+                  New-Item -Path $dest -ItemType Directory -Force
+              } else {
+                  Copy-Item -Path $_.FullName -Destination $dest -Force
+              }
+          }
+
+          # Clean up the extracted folder
+          Remove-Item -Path $extractPath -Recurse -Force
+        displayName: 'Extract .zip file and prepare files for deployment'
+
+      - task: AzureWebApp@1
+        displayName: 'Azure Web App Deploy: DevPasswordReactjs'
+        inputs:
+          azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
+          appType: webApp
+          appName: DevPasswordReactjs
+          package: '$(Build.ArtifactStagingDirectory)'  # Directly deploy the extracted files
