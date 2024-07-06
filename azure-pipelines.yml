@@ -23,10 +23,10 @@ jobs:
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
           $sourcePath = "$(Build.SourcesDirectory)\path\to\build"
 
-          # Check if the source path contains any files or directories
-          if (-Not (Test-Path $sourcePath)) {
-            throw "Source directory does not exist: $sourcePath"
-          }
+          # # Check if the source path contains any files or directories
+          # if (-Not (Test-Path $sourcePath)) {
+          #   throw "Source directory does not exist: $sourcePath"
+          # }
 
           if (-Not (Get-ChildItem -Path $sourcePath -Recurse)) {
             throw "Source directory is empty: $sourcePath"
