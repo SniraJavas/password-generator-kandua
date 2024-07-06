@@ -83,7 +83,7 @@ jobs:
       - task: AzureWebApp@1
         inputs:
           azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
-          appName: 'Your Web App Name'
+          appName: 'DevPasswordReactjs'
           package: '$(Build.ArtifactStagingDirectory)\drop\myapp.zip'
           deploymentMethod: 'zipDeploy'
         displayName: 'Deploy .zip package to Azure Web App'
