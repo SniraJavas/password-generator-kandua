@@ -63,6 +63,17 @@ jobs:
           artifactName: 'drop'
           downloadPath: '$(Build.ArtifactStagingDirectory)'
 
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'  # Replace with your service connection name
+          scriptType: 'ps'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            $tokenResponse = az account get-access-token --resource https://management.azure.com/
+            $token = $tokenResponse.accessToken
+            Write-Host "##vso[task.setvariable variable=AZURE_WEBAPP_DEPLOYMENT_TOKEN]$token"
+        displayName: 'Get Azure Access Token'
+
       - powershell: |
           # Define the path to the .zip file
           $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"
@@ -87,9 +98,12 @@ jobs:
 
       - powershell: |
           # Verify that the deployment was successful
-          $status = Invoke-RestMethod -Uri "https://$($env:AZURE_WEBAPP_NAME).scm.azurewebsites.net/api/deployments/latest" -Method Get -Headers @{ "Authorization" = "Bearer $($env:AZURE_WEBAPP_DEPLOYMENT_TOKEN)" }
+          $headers = @{
+            Authorization = "Bearer $(AZURE_WEBAPP_DEPLOYMENT_TOKEN)"
+          }
+          $status = Invoke-RestMethod -Uri "https://$env:AZURE_WEBAPP_NAME.scm.azurewebsites.net/api/deployments/latest" -Method Get -Headers $headers
           Write-Host "Deployment status: $($status.status)"
         displayName: 'Verify Deployment Status'
         env:
           AZURE_WEBAPP_NAME: 'DevPasswordReactjs'
-          AZURE_WEBAPP_DEPLOYMENT_TOKEN: $(AzureWebAppDeployToken)
+          AZURE_WEBAPP_DEPLOYMENT_TOKEN: $(AZURE_WEBAPP_DEPLOYMENT_TOKEN)
