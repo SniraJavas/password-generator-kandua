@@ -69,10 +69,10 @@ jobs:
           scriptType: 'ps'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            $tokenResponse = az account get-access-token --resource https://management.azure.com/
-            $token = $tokenResponse.accessToken
-            Write-Host "##vso[task.setvariable variable=AZURE_WEBAPP_DEPLOYMENT_TOKEN]$token"
-        displayName: 'Get Azure Access Token'
+            $servicePrincipalId = "21f81236-6acf-452e-84ca-35e5253f63a8"
+            $resourceGroup = "GrowthApplications"  # Replace with your resource group name
+            az role assignment create --assignee $servicePrincipalId --role Contributor --scope /subscriptions/$($env:AZURE_SUBSCRIPTION_ID)/resourceGroups/$resourceGroup
+        displayName: 'Assign Contributor Role to Service Principal'
 
       - powershell: |
           # Define the path to the .zip file
