@@ -63,12 +63,36 @@ jobs:
           downloadPath: '$(Build.ArtifactStagingDirectory)'
 
       - powershell: |
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          # Define the path to the .zip file
           $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"
-          $extractPath = "$(Build.ArtifactStagingDirectory)\extracted"
 
-          # Check if ZIP file exists and display the result
+          # Check if the ZIP file exists
           $zipFileExists = Test-Path $zipPath
           Write-Host "Does the ZIP file exist at $zipPath? $zipFileExists"
 
-          # List the artifact staging directory contents before extraction
+          # Verify the ZIP file exists before continuing
+          if (-Not $zipFileExists) {
+            throw "ZIP file does not exist at $zipPath"
+          }
+
+          # List the artifact staging directory contents before setting up the deployment
+          Write-Host "Listing artifact staging directory contents:"
+          Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
+        displayName: 'Verify .zip file existence'
+
+      - task: AzureWebApp@1
+        inputs:
+          azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
+          appName: 'Your Web App Name'
+          package: '$(Build.ArtifactStagingDirectory)\drop\myapp.zip'
+          deploymentMethod: 'zipDeploy'
+        displayName: 'Deploy .zip package to Azure Web App'
+
+      - powershell: |
+          # Verify that the deployment was successful
+          $status = Invoke-RestMethod -Uri "https://$($env:AZURE_WEBAPP_NAME).scm.azurewebsites.net/api/deployments/latest" -Method Get -Headers @{ "Authorization" = "Bearer $($env:AZURE_WEBAPP_DEPLOYMENT_TOKEN)" }
+          Write-Host "Deployment status: $($status.status)"
+        displayName: 'Verify Deployment Status'
+        env:
+          AZURE_WEBAPP_NAME: 'Your Web App Name'
+          AZURE_WEBAPP_DEPLOYMENT_TOKEN: $(AzureWebAppDeployToken)
