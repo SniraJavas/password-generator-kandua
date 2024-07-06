@@ -21,7 +21,7 @@ jobs:
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
-          $sourcePath = "$(Build.SourcesDirectory)"
+          $sourcePath = "$(Build.SourcesDirectory)\path\to\build\directory"  # Ensure this points to your build output directory
           
           # List the source directory contents before creating the ZIP file
           Write-Host "Listing source directory contents:"
@@ -68,7 +68,7 @@ jobs:
 
       - powershell: |
           Add-Type -AssemblyName System.IO.Compression.FileSystem
-          $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"
+          $zipPath = "$(Build.ArtifactStagingDirectory)\drop\myapp.zip"  # Adjusted path
           $extractPath = "$(Build.ArtifactStagingDirectory)\extracted"
 
           # Check if ZIP file exists and display the result
@@ -83,6 +83,11 @@ jobs:
           if (-Not $zipFileExists) {
             throw "ZIP file does not exist at path: $zipPath"
           }
+
+          # Display contents of the ZIP file
+          Write-Host "Contents of the ZIP file:"
+          $zip = [IO.Compression.ZipFile]::OpenRead($zipPath)
+          $zip.Entries | ForEach-Object { Write-Host $_.FullName }
 
           # Ensure the extract path exists
           if (-Not (Test-Path $extractPath)) {
@@ -116,4 +121,4 @@ jobs:
           azureSubscription: 'Pay-As-You-Go (21f81236-6acf-452e-84ca-35e5253f63a8)'
           appType: webApp
           appName: DevPasswordReactjs
-          package: '$(Build.ArtifactStagingDirectory)'  # Directly deploy the extracted files
+          package: '$(Build.ArtifactStagingDirectory)\drop\myapp.zip'  # Ensure correct path
