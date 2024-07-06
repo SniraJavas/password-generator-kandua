@@ -19,12 +19,21 @@ jobs:
         displayName: 'Install dependencies and build'  # Display name for the step
 
       - powershell: |
+          $sourcePath = "$(Build.SourcesDirectory)\path\to\build\"
+
+          # Check if the source path exists and create it if it doesn't
+          if (-Not (Test-Path $sourcePath)) {
+            Write-Host "Source path does not exist. Creating: $sourcePath"
+            New-Item -Path $sourcePath -ItemType Directory -Force
+          } else {
+            Write-Host "Source path exists: $sourcePath"
+          }
+
           # List contents of the sources directory to help identify the correct path
           Write-Host "Listing contents of the sources directory:"
           Get-ChildItem -Path "$(Build.SourcesDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
 
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"  # Define the path for the ZIP file to be created
-          $sourcePath = "$(Build.SourcesDirectory)\path\to\build\directory"  # Define the source path to be zipped
 
           # List the source directory contents before creating the ZIP file
           Write-Host "Listing source directory contents:"
@@ -88,4 +97,8 @@ jobs:
           }
 
           # Display contents of the ZIP file
-          Write-Host "Contents of the ZIP 
+          Write-Host "Contents of the ZIP file:"
+          $zip = [IO.Compression.ZipFile]::OpenRead($zipPath)
+          $zip.Entries | ForEach-Object { Write-Host $_.FullName }  # List the contents of the ZIP file
+
+          # Ensure the extract path exists
