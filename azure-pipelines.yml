@@ -23,13 +23,14 @@ jobs:
           $zipPath = "$(Build.ArtifactStagingDirectory)\myapp.zip"
           $sourcePath = "$(Build.SourcesDirectory)\path\to\build"
 
-          # # Check if the source path contains any files or directories
-          # if (-Not (Test-Path $sourcePath)) {
-          #   throw "Source directory does not exist: $sourcePath"
-          # }
+          # Check if the source path exists
+          if (-Not (Test-Path $sourcePath)) {
+            throw "Source directory does not exist: $sourcePath"
+          }
 
-          if (-Not (Get-ChildItem -Path $sourcePath -Recurse)) {
-            throw "Source directory is empty: $sourcePath"
+          # Check if the source path contains any files or directories
+          if (-Not (Get-ChildItem -Path $sourcePath -Recurse | Where-Object { $_.PSIsContainer -eq $false })) {
+            throw "Source directory is empty or does not contain files: $sourcePath"
           }
 
           # Create the ZIP file from the source directory
@@ -44,6 +45,7 @@ jobs:
           Write-Host "Listing artifact staging directory contents:"
           Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)" -Recurse | ForEach-Object { Write-Host $_.FullName }
         displayName: 'Create .zip file for artifacts'
+
 
       - task: PublishBuildArtifacts@1
         inputs:
